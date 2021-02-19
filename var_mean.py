@@ -27,7 +27,7 @@ def av_chi(chi,n_sites,coord):
 def genSus(coupling_dict,gtensor_dict,n_sites,beta):
     # need to solve: gvec = M*chi_vec
 
-    assert len(gtensor_dict) == n_sites, 'not enough gtensors'
+    assert len(gtensor_dict) >= n_sites, 'not enough gtensors'
 
     M = np.zeros((3*n_sites,3*n_sites))
     # model Spin Hamiltonian couplings
@@ -35,6 +35,7 @@ def genSus(coupling_dict,gtensor_dict,n_sites,beta):
         for j in range(n_sites): 
             if (i,j) in coupling_dict :
                 M[3*i:3*(i+1),3*j:3*(j+1)] += coupling_dict[(i,j)]
+                M[3*j:3*(j+1),3*i:3*(i+1)] += coupling_dict[(i,j)].T
 
     # self term
     for i in range(n_sites):
@@ -96,6 +97,7 @@ u = a1-a0
 J3 = np.einsum('ij,jk,kl',rotMatrix(-np.pi/2,u),J2,LA.inv(rotMatrix(-np.pi/2,u)))
 
 
+# Only include couplings in 1 direction. That is if don't include both (0,1) and (1,0)
 coupling_dict = {( 0, 1) : J1,
                  ( 0, 8) : J3,
                  ( 0, 11) : J2,
@@ -112,6 +114,8 @@ coupling_dict = {( 0, 1) : J1,
                  ( 7, 8) : J1,
                  ( 9, 10) : J1,
                  ( 10, 11) : J1}
+
+
 
 
 
